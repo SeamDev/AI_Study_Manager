@@ -1,6 +1,6 @@
 {
-    "name": "a_i_study_manager",
-    "short_name": "a_i_study_manager",
+    "name": "AI Study Manager",
+    "short_name": "Manager",
     "start_url": ".",
     "display": "standalone",
     "background_color": "#0175C2",
