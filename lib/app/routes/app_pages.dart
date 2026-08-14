@@ -1,9 +1,12 @@
+import 'package:ai_study_manager/app/modules/auth/controllers/auth_middleware.dart';
 import 'package:get/get.dart';
 
 import '../modules/academic_routine/bindings/academic_routine_binding.dart';
 import '../modules/academic_routine/views/academic_routine_view.dart';
 import '../modules/assessments/bindings/assessments_binding.dart';
 import '../modules/assessments/views/assessments_view.dart';
+import '../modules/auth/bindings/auth_binding.dart';
+import '../modules/auth/views/auth_view.dart';
 import '../modules/bus_schedule/bindings/bus_schedule_binding.dart';
 import '../modules/bus_schedule/views/bus_schedule_view.dart';
 import '../modules/dashboard/bindings/dashboard_binding.dart';
@@ -41,6 +44,7 @@ class AppPages {
       name: _Paths.SIDEBAR,
       page: () => const SidebarView(),
       binding: SidebarBinding(),
+      middlewares: [AuthMiddleware()],
     ),
     GetPage(
       name: _Paths.NOTICE,
@@ -71,6 +75,11 @@ class AppPages {
       name: _Paths.BUS_SCHEDULE,
       page: () => const BusScheduleView(),
       binding: BusScheduleBinding(),
+    ),
+    GetPage(
+      name: _Paths.AUTH,
+      page: () => const AuthView(),
+      binding: AuthBinding(),
     ),
   ];
 }

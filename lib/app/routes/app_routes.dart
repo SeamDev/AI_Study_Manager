@@ -12,6 +12,7 @@ abstract class Routes {
   static const TODO = _Paths.TODO;
   static const EXAM = _Paths.EXAM;
   static const BUS_SCHEDULE = _Paths.BUS_SCHEDULE;
+  static const AUTH = _Paths.AUTH;
 }
 
 abstract class _Paths {
@@ -25,4 +26,5 @@ abstract class _Paths {
   static const TODO = '/todo';
   static const EXAM = '/exam';
   static const BUS_SCHEDULE = '/bus-schedule';
+  static const AUTH = '/auth';
 }

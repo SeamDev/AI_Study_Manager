@@ -1,10 +1,17 @@
-import 'package:ai_study_manager/app/modules/sidebar/controllers/sidebar_controller.dart';
-import 'package:ai_study_manager/app/modules/sidebar/views/sidebar_view.dart';
-import 'package:ai_study_manager/app/widgets/theme.dart';
+import 'package:ai_study_manager/app/modules/auth/views/auth_view.dart';
+import 'package:ai_study_manager/app/routes/app_pages.dart';
+import 'package:ai_study_manager/app/utils/app_binding.dart';
+import 'package:ai_study_manager/app/utils/theme.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
+import 'package:supabase_flutter/supabase_flutter.dart';
 
-void main() {
+void main() async {
+  WidgetsFlutterBinding.ensureInitialized();
+  await Supabase.initialize(
+    url: 'https://ueltdsfdhiufopuvazsa.supabase.co',
+    publishableKey: 'sb_publishable_y4VPzulMfz1gfen_SMW6Wg_zt5BK9Lm',
+  );
   runApp(const StudyWithAIApp());
 }
 
@@ -16,12 +23,11 @@ class StudyWithAIApp extends StatelessWidget {
     return GetMaterialApp(
       debugShowCheckedModeBanner: false,
       title: 'Study With AI',
+      getPages: AppPages.routes,
       theme: AppTheme.darkTheme,
       themeMode: ThemeMode.dark,
-      initialBinding: BindingsBuilder(() {
-        Get.lazyPut<SidebarController>(() => SidebarController());
-      }),
-      home: const DashboardPage(),
+      initialBinding: AppBinding(),
+      home: const AuthView(),
     );
   }
 }

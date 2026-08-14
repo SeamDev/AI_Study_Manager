@@ -207,5 +207,6 @@ class AppTheme {
         return AppColors.card2;
       }),
     ),
+    
   );
 }
