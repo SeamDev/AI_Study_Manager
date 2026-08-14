@@ -1,6 +1,9 @@
+import 'package:ai_study_manager/app/modules/dashboard/views/bus_card.dart';
 import 'package:ai_study_manager/app/modules/dashboard/views/deadline_card.dart';
 import 'package:ai_study_manager/app/modules/dashboard/views/schedule_card.dart';
 import 'package:ai_study_manager/app/modules/dashboard/views/summery_card.dart';
+import 'package:ai_study_manager/app/modules/dashboard/views/todo_card.dart';
+import 'package:ai_study_manager/app/modules/todo/controllers/todo_controller.dart';
 import 'package:flutter/material.dart';
 
 import 'package:get/get.dart';
@@ -42,9 +45,9 @@ class DashboardView extends GetView<DashboardController> {
           Row(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
-              Expanded(flex: 5, child: _buildBusCard()),
+              Expanded(flex: 5, child: DashboardBusCard()),
               const SizedBox(width: 14),
-              Expanded(flex: 4, child: _buildTodoCard()),
+              Expanded(flex: 4, child: DashboardTodoCard()),
               const SizedBox(width: 14),
               SizedBox(width: 175, child: _buildProgressCard()),
             ],
@@ -127,178 +130,71 @@ Widget _buildTopBar(DashboardController controller, BuildContext context) {
 }
 
 // ----------------------------------------------------------
-// BUS
-// ----------------------------------------------------------
-
-Widget _buildBusCard() {
-  return _panel(
-    title: 'Next University Bus',
-    action: 'View Schedule',
-    child: SizedBox(
-      height: 88,
-      child: Row(
-        children: [
-          Container(
-            width: 60,
-            height: 60,
-            decoration: BoxDecoration(
-              color: const Color(0xFF104D18),
-              borderRadius: BorderRadius.circular(10),
-            ),
-            child: const Icon(
-              Icons.directions_bus_rounded,
-              color: AppColors.green,
-              size: 35,
-            ),
-          ),
-
-          const SizedBox(width: 14),
-
-          const Expanded(
-            child: Column(
-              mainAxisAlignment: MainAxisAlignment.center,
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
-                Text(
-                  'Green Line',
-                  style: TextStyle(fontSize: 16, fontWeight: FontWeight.w500),
-                ),
-                SizedBox(height: 5),
-                Text(
-                  'Campus → City',
-                  style: TextStyle(
-                    color: AppColors.secondaryText,
-                    fontSize: 13,
-                  ),
-                ),
-              ],
-            ),
-          ),
-
-          Container(
-            width: 145,
-            padding: const EdgeInsets.all(10),
-            decoration: BoxDecoration(
-              color: const Color(0xFF07182A),
-              borderRadius: BorderRadius.circular(9),
-            ),
-            child: const Column(
-              children: [
-                Text('08:00 AM', style: TextStyle(fontSize: 20)),
-                SizedBox(height: 3),
-                Text(
-                  'Leaves in 28 min',
-                  style: TextStyle(color: AppColors.green, fontSize: 12),
-                ),
-              ],
-            ),
-          ),
-        ],
-      ),
-    ),
-  );
-}
-
-// ----------------------------------------------------------
-// TODO
-// ----------------------------------------------------------
-
-Widget _buildTodoCard() {
-  return _panel(
-    title: "Today's To Do",
-    action: 'View All',
-    child: Column(
-      children: [
-        _todoItem('Finish DSA Assignment', '11:59 PM', AppColors.red),
-        _todoItem('Review OS Lecture Notes', '5:00 PM', AppColors.yellow),
-        _todoItem(
-          'Read Computer Networks Chapter 3',
-          '8:00 PM',
-          AppColors.blue,
-        ),
-      ],
-    ),
-  );
-}
-
-Widget _todoItem(String title, String time, Color color) {
-  return SizedBox(
-    height: 38,
-    child: Row(
-      children: [
-        Container(
-          width: 20,
-          height: 20,
-          decoration: BoxDecoration(
-            shape: BoxShape.circle,
-            border: Border.all(color: AppColors.secondaryText),
-          ),
-        ),
-
-        const SizedBox(width: 10),
-
-        Expanded(child: Text(title, style: const TextStyle(fontSize: 12))),
-
-        Container(
-          padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
-          decoration: BoxDecoration(
-            color: color.withOpacity(.12),
-            borderRadius: BorderRadius.circular(6),
-          ),
-          child: Text(time, style: TextStyle(color: color, fontSize: 10)),
-        ),
-      ],
-    ),
-  );
-}
-
-// ----------------------------------------------------------
 // PROGRESS
 // ----------------------------------------------------------
 
 Widget _buildProgressCard() {
-  return Container(
-    height: 145,
-    decoration: BoxDecoration(
-      color: AppColors.card,
-      borderRadius: BorderRadius.circular(11),
-      border: Border.all(color: AppColors.border),
-    ),
-    child: Center(
-      child: SizedBox(
-        width: 105,
-        height: 105,
-        child: Stack(
-          alignment: Alignment.center,
-          children: [
-            SizedBox(
-              width: 100,
-              height: 100,
-              child: CircularProgressIndicator(
-                value: .4,
-                strokeWidth: 7,
-                backgroundColor: const Color(0xFF122840),
-                valueColor: const AlwaysStoppedAnimation(AppColors.cyan),
-              ),
-            ),
-            const Column(
-              mainAxisAlignment: MainAxisAlignment.center,
-              children: [
-                Text('2/5', style: TextStyle(fontSize: 23)),
-                Text(
-                  'Completed',
-                  style: TextStyle(
-                    color: AppColors.secondaryText,
-                    fontSize: 10,
-                  ),
+  final todoController = Get.find<TodoController>();
+
+  return Obx(() {
+    final total = todoController.todos.length;
+
+    final completed = todoController.todos
+        .where((todo) => todo['is_complete'] == true)
+        .length;
+
+    final progress = total == 0 ? 0.0 : completed / total;
+
+    return Container(
+      height: 145,
+      decoration: BoxDecoration(
+        color: AppColors.card,
+        borderRadius: BorderRadius.circular(11),
+        border: Border.all(color: AppColors.border),
+      ),
+      child: Center(
+        child: SizedBox(
+          width: 105,
+          height: 105,
+          child: Stack(
+            alignment: Alignment.center,
+            children: [
+              SizedBox(
+                width: 100,
+                height: 100,
+                child: CircularProgressIndicator(
+                  value: progress,
+                  strokeWidth: 7,
+                  backgroundColor: const Color(0xFF122840),
+                  valueColor: const AlwaysStoppedAnimation(AppColors.cyan),
                 ),
-              ],
-            ),
-          ],
+              ),
+
+              Column(
+                mainAxisAlignment: MainAxisAlignment.center,
+                children: [
+                  Text(
+                    '$completed/$total',
+                    style: const TextStyle(
+                      fontSize: 23,
+                      fontWeight: FontWeight.w500,
+                    ),
+                  ),
+                  const Text(
+                    'Completed',
+                    style: TextStyle(
+                      color: AppColors.secondaryText,
+                      fontSize: 10,
+                    ),
+                  ),
+                ],
+              ),
+            ],
+          ),
         ),
       ),
-    ),
-  );
+    );
+  });
 }
 
 // ----------------------------------------------------------
@@ -443,46 +339,6 @@ Widget _aiButton(String text) {
     child: Text(
       text,
       style: const TextStyle(color: Colors.white, fontSize: 11),
-    ),
-  );
-}
-
-// ----------------------------------------------------------
-// COMMON PANEL
-// ----------------------------------------------------------
-
-Widget _panel({
-  required String title,
-  required String action,
-  required Widget child,
-}) {
-  return Container(
-    padding: const EdgeInsets.fromLTRB(14, 12, 14, 10),
-    decoration: BoxDecoration(
-      color: AppColors.card,
-      borderRadius: BorderRadius.circular(11),
-      border: Border.all(color: AppColors.border),
-    ),
-    child: Column(
-      children: [
-        Row(
-          children: [
-            Text(
-              title,
-              style: const TextStyle(fontSize: 17, fontWeight: FontWeight.w500),
-            ),
-            const Spacer(),
-            Text(
-              action,
-              style: const TextStyle(color: AppColors.cyan, fontSize: 12),
-            ),
-          ],
-        ),
-
-        const SizedBox(height: 8),
-
-        child,
-      ],
     ),
   );
 }

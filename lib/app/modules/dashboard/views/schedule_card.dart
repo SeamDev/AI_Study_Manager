@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-
+import 'package:intl/intl.dart';
 import 'package:get/get.dart';
 
 import '../../../utils/app_color.dart';
@@ -16,16 +16,17 @@ class ScheduleCard extends GetView<DashboardController> {
       ['03:00 PM', 'Operating Systems', 'CSE 205', 'Room 401', '8h 25m'],
       ['05:00 PM', 'Computer Networks', 'CSE 206', 'Room 404', '10h 25m'],
     ];
-    return Container(
-      padding: const EdgeInsets.fromLTRB(14, 12, 14, 10),
-      decoration: BoxDecoration(
-        color: AppColors.card,
-        borderRadius: BorderRadius.circular(11),
-        border: Border.all(color: AppColors.border),
-      ),
-      child: Column(
-        children: [
-          Row(
+    return StreamBuilder(
+      stream: Stream.periodic(const Duration(minutes: 1)),
+      builder: (context, asyncSnapshot) {
+        return Container(
+          padding: const EdgeInsets.fromLTRB(14, 12, 14, 10),
+          decoration: BoxDecoration(
+            color: AppColors.card,
+            borderRadius: BorderRadius.circular(11),
+            border: Border.all(color: AppColors.border),
+          ),
+          child: Column(
             children: [
               Text(
                 "Today's Schedule",
@@ -34,31 +35,26 @@ class ScheduleCard extends GetView<DashboardController> {
                   fontWeight: FontWeight.w500,
                 ),
               ),
-              const Spacer(),
-              Text(
-                'View Full',
-                style: const TextStyle(color: AppColors.cyan, fontSize: 12),
+
+              const SizedBox(height: 8),
+
+              Column(
+                children: [
+                  for (int i = 0; i < schedules.length; i++)
+                    _scheduleItem(
+                      time: schedules[i][0],
+                      title: schedules[i][1],
+                      code: schedules[i][2],
+                      room: schedules[i][3],
+                      starts: getTimeRemaining(schedules[i][0]),
+                      last: i == schedules.length - 1,
+                    ),
+                ],
               ),
             ],
           ),
-
-          const SizedBox(height: 8),
-
-          Column(
-            children: [
-              for (int i = 0; i < schedules.length; i++)
-                _scheduleItem(
-                  time: schedules[i][0],
-                  title: schedules[i][1],
-                  code: schedules[i][2],
-                  room: schedules[i][3],
-                  starts: schedules[i][4],
-                  last: i == schedules.length - 1,
-                ),
-            ],
-          ),
-        ],
-      ),
+        );
+      },
     );
   }
 }
@@ -87,24 +83,31 @@ Widget _scheduleItem({
           ),
         ),
 
+        // Timeline
         SizedBox(
           width: 20,
+          height: 65,
           child: Stack(
             alignment: Alignment.topCenter,
             children: [
+              // Connecting line
               if (!last)
                 Positioned(
-                  top: 15,
+                  top: 13,
                   bottom: 0,
-                  child: Container(width: 1, color: const Color(0xFF17405B)),
+                  child: Container(width: 2, color: const Color(0xFF17405B)),
                 ),
-              Container(
-                margin: const EdgeInsets.only(top: 7),
-                width: 12,
-                height: 12,
-                decoration: const BoxDecoration(
-                  color: AppColors.cyan,
-                  shape: BoxShape.circle,
+
+              // Dot
+              Positioned(
+                top: 7,
+                child: Container(
+                  width: 12,
+                  height: 12,
+                  decoration: const BoxDecoration(
+                    color: AppColors.cyan,
+                    shape: BoxShape.circle,
+                  ),
                 ),
               ),
             ],
@@ -113,6 +116,7 @@ Widget _scheduleItem({
 
         const SizedBox(width: 8),
 
+        // Schedule content
         Expanded(
           child: Container(
             margin: const EdgeInsets.only(bottom: 5),
@@ -193,4 +197,37 @@ Widget _scheduleItem({
       ],
     ),
   );
+}
+
+String getTimeRemaining(String time) {
+  final now = DateTime.now();
+
+  final parsed = DateFormat('hh:mm a').parse(time);
+
+  final target = DateTime(
+    now.year,
+    now.month,
+    now.day,
+    parsed.hour,
+    parsed.minute,
+  );
+
+  if (target.isBefore(now)) {
+    return 'Ended';
+  }
+
+  final difference = target.difference(now);
+
+  final hours = difference.inHours;
+  final minutes = difference.inMinutes.remainder(60);
+
+  if (hours > 0) {
+    return '${hours}h ${minutes}m';
+  }
+
+  if (minutes > 0) {
+    return '${minutes}m';
+  }
+
+  return 'Starting';
 }

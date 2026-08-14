@@ -50,6 +50,8 @@ class DashboardController extends GetxController {
       await loadClasses();
       await loadHomework();
       await loadExams();
+
+      // deadline
     } catch (e) {
       print('Dashboard error: $e');
     } finally {
@@ -71,23 +73,17 @@ class DashboardController extends GetxController {
 
       final metadata = user.userMetadata ?? {};
 
-      fullName.value =
-          metadata['full_name']?.toString() ?? '';
+      fullName.value = metadata['full_name']?.toString() ?? '';
 
-      studentId.value =
-          metadata['student_id']?.toString() ?? '';
+      studentId.value = metadata['student_id']?.toString() ?? '';
 
-      semester.value =
-          metadata['semester']?.toString() ?? '';
+      semester.value = metadata['semester']?.toString() ?? '';
 
-      section.value =
-          metadata['section']?.toString() ?? '';
+      section.value = metadata['section']?.toString() ?? '';
 
-      email.value =
-          user.email ?? '';
+      email.value = user.email ?? '';
 
-      initials.value =
-          _getInitials(fullName.value);
+      initials.value = _getInitials(fullName.value);
     } catch (e) {
       print('User info error: $e');
     }
@@ -147,9 +143,7 @@ class DashboardController extends GetxController {
       return '';
     }
 
-    final parts = name
-        .trim()
-        .split(RegExp(r'\s+'));
+    final parts = name.trim().split(RegExp(r'\s+'));
 
     if (parts.length == 1) {
       return parts.first.substring(0, 1).toUpperCase();
@@ -165,4 +159,46 @@ class DashboardController extends GetxController {
   Future<void> refreshDashboard() async {
     await loadDashboard();
   }
+
+  // DeadLine To Do
+  final RxList<Map<String, dynamic>> deadlines = <Map<String, dynamic>>[
+    {
+      'id': 'database_midterm',
+      'title': 'Database Systems Midterm',
+      'code': 'CSE 204',
+      'priority': 'High',
+      'date': 'May 18, 2025',
+      'remaining': 'In 5 days',
+      'isComplete': false,
+    },
+    {
+      'id': 'discrete_math_midterm',
+      'title': 'Discrete Math Midterm',
+      'code': 'MATH 203',
+      'priority': 'Medium',
+      'date': 'May 19, 2025',
+      'remaining': 'In 8 days',
+      'isComplete': false,
+    },
+    {
+      'id': 'os_assignment',
+      'title': 'Operating Systems Assignment',
+      'code': 'CSE 205',
+      'priority': 'Medium',
+      'date': 'May 23, 2025',
+      'remaining': 'In 6 days',
+      'isComplete': false,
+    },
+    {
+      'id': 'networks_quiz',
+      'title': 'Computer Networks Quiz',
+      'code': 'CSE 206',
+      'priority': 'Low',
+      'date': 'May 23, 2025',
+      'remaining': 'In 10 days',
+      'isComplete': false,
+    },
+  ].obs;
+
+
 }
