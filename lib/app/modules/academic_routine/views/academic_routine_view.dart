@@ -34,23 +34,23 @@ class AcademicRoutineView extends GetView<AcademicRoutineController> {
 
             const SizedBox(height: 25),
 
-            // DAY SELECTOR
-            Obx(
-              () => SizedBox(
-                height: 45,
+            //DAY SELECTOR
+            SizedBox(
+              height: 45,
 
-                child: ListView.separated(
-                  scrollDirection: Axis.horizontal,
+              child: ListView.separated(
+                scrollDirection: Axis.horizontal,
 
-                  itemCount: controller.days.length,
+                itemCount: controller.days.length,
 
-                  separatorBuilder: (_, _) => const SizedBox(width: 10),
+                separatorBuilder: (_, _) => const SizedBox(width: 10),
 
-                  itemBuilder: (context, index) {
+                itemBuilder: (context, index) {
+                  return Obx(() {
                     final day = controller.days[index];
 
                     final selected = controller.selectedDay.value == day;
-                    return InkWell(
+                    return GestureDetector(
                       onTap: () {
                         controller.changeDay(day);
                       },
@@ -79,8 +79,8 @@ class AcademicRoutineView extends GetView<AcademicRoutineController> {
                         ),
                       ),
                     );
-                  },
-                ),
+                  });
+                },
               ),
             ),
 

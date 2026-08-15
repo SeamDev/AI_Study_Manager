@@ -5,7 +5,7 @@ import 'package:supabase_flutter/supabase_flutter.dart';
 
 class AcademicRoutineController extends GetxController {
   final SupabaseClient _supabase = Supabase.instance.client;
-
+final c = 0.obs;
   final RxString selectedDay = ''.obs;
 
   final RxList<String> days = <String>[

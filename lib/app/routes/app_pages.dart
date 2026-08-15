@@ -1,4 +1,5 @@
 import 'package:ai_study_manager/app/modules/auth/controllers/auth_middleware.dart';
+import 'package:ai_study_manager/app/modules/study_with_ai/views/ai_chat_view.dart';
 import 'package:get/get.dart';
 
 import '../modules/academic_routine/bindings/academic_routine_binding.dart';
@@ -80,6 +81,11 @@ class AppPages {
       name: _Paths.AUTH,
       page: () => const AuthView(),
       binding: AuthBinding(),
+    ),
+    GetPage(
+      name: _Paths.AI_CHAT,
+      page: () => const AiChatView(),
+      binding: StudyWithAiBinding(),
     ),
   ];
 }

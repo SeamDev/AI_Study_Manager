@@ -16,7 +16,7 @@ class NoticeSection extends StatelessWidget {
       children: [
         Padding(
           padding: const EdgeInsets.symmetric(vertical: 12),
-
+          
           child: Text(
             title,
 

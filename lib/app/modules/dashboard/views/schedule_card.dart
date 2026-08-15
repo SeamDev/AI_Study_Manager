@@ -1,4 +1,5 @@
 import 'package:ai_study_manager/app/models/routine_schedule_model.dart';
+import 'package:ai_study_manager/app/routes/app_pages.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 
@@ -9,7 +10,6 @@ class ScheduleCard extends GetView<DashboardController> {
   const ScheduleCard({super.key});
   @override
   Widget build(BuildContext context) {
-    final schedules = controller.academicController.todaySchedules;
     return StreamBuilder(
       stream: Stream.periodic(const Duration(minutes: 1)),
       builder: (context, asyncSnapshot) {
@@ -22,30 +22,52 @@ class ScheduleCard extends GetView<DashboardController> {
           ),
           child: Column(
             children: [
-              Text(
-                "Today's Schedule",
-                style: const TextStyle(
-                  fontSize: 17,
-                  fontWeight: FontWeight.w500,
-                ),
+              Row(
+                mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                children: [
+                  Text(
+                    "Today's Schedule",
+                    style: const TextStyle(
+                      fontSize: 17,
+                      fontWeight: FontWeight.w500,
+                    ),
+                  ),
+                  GestureDetector(
+                    onTap: () {
+                      Get.toNamed(Routes.ACADEMIC_ROUTINE);
+                    },
+                    child: Text(
+                      'View All',
+                      style: const TextStyle(
+                        color: AppColors.cyan,
+                        fontSize: 12,
+                      ),
+                    ),
+                  ),
+                ],
               ),
 
               const SizedBox(height: 8),
 
-              Column(
-                children: [
-                  for (int i = 0; i < schedules.length; i++)
-                    _scheduleItem(
-                      time: schedules[i].startTime,
-                      title: schedules[i].title,
-                      code: schedules[i].subtitle,
-                      room: schedules[i].room,
-                      starts: getTimeStatus(schedules[i]),
-                      last: i == schedules.length - 1,
-                      isActive: controller.academicController.isActive(schedules[i])
-                    ),
-                ],
-              ),
+              Obx(() {
+                final schedules = controller.academicController.todaySchedules;
+                return Column(
+                  children: [
+                    for (int i = 0; i < schedules.length; i++)
+                      _scheduleItem(
+                        time: schedules[i].startTime,
+                        title: schedules[i].title,
+                        code: schedules[i].subtitle,
+                        room: schedules[i].room,
+                        starts: getTimeStatus(schedules[i]),
+                        last: i == schedules.length - 1,
+                        isActive: controller.academicController.isActive(
+                          schedules[i],
+                        ),
+                      ),
+                  ],
+                );
+              }),
             ],
           ),
         );
@@ -61,7 +83,7 @@ Widget _scheduleItem({
   required String room,
   required String starts,
   required bool last,
-  required bool isActive
+  required bool isActive,
 }) {
   return SizedBox(
     height: 65,
@@ -101,7 +123,7 @@ Widget _scheduleItem({
                   width: 12,
                   height: 12,
                   decoration: BoxDecoration(
-                    color: isActive ? Colors.green :AppColors.cyan ,
+                    color: isActive ? Colors.green : AppColors.cyan,
                     shape: BoxShape.circle,
                   ),
                 ),

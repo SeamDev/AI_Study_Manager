@@ -13,6 +13,7 @@ abstract class Routes {
   static const EXAM = _Paths.EXAM;
   static const BUS_SCHEDULE = _Paths.BUS_SCHEDULE;
   static const AUTH = _Paths.AUTH;
+  static const AI_CHAT = _Paths.AI_CHAT;
 }
 
 abstract class _Paths {
@@ -27,4 +28,5 @@ abstract class _Paths {
   static const EXAM = '/exam';
   static const BUS_SCHEDULE = '/bus-schedule';
   static const AUTH = '/auth';
+  static const AI_CHAT = '/ai-chat';
 }
