@@ -1,5 +1,5 @@
+import 'package:ai_study_manager/app/models/routine_schedule_model.dart';
 import 'package:flutter/material.dart';
-import 'package:intl/intl.dart';
 import 'package:get/get.dart';
 
 import '../../../utils/app_color.dart';
@@ -9,13 +9,7 @@ class ScheduleCard extends GetView<DashboardController> {
   const ScheduleCard({super.key});
   @override
   Widget build(BuildContext context) {
-    final schedules = [
-      ['08:00 AM', 'Data Structures', 'CSE 201', 'Room 402', '1h 25m'],
-      ['10:00 AM', 'Database Systems', 'CSE 204', 'Lab 1', '3h 25m'],
-      ['01:00 PM', 'Discrete Mathematics', 'MATH 203', 'Room 305', '6h 25m'],
-      ['03:00 PM', 'Operating Systems', 'CSE 205', 'Room 401', '8h 25m'],
-      ['05:00 PM', 'Computer Networks', 'CSE 206', 'Room 404', '10h 25m'],
-    ];
+    final schedules = controller.academicController.todaySchedules;
     return StreamBuilder(
       stream: Stream.periodic(const Duration(minutes: 1)),
       builder: (context, asyncSnapshot) {
@@ -42,12 +36,13 @@ class ScheduleCard extends GetView<DashboardController> {
                 children: [
                   for (int i = 0; i < schedules.length; i++)
                     _scheduleItem(
-                      time: schedules[i][0],
-                      title: schedules[i][1],
-                      code: schedules[i][2],
-                      room: schedules[i][3],
-                      starts: getTimeRemaining(schedules[i][0]),
+                      time: schedules[i].startTime,
+                      title: schedules[i].title,
+                      code: schedules[i].subtitle,
+                      room: schedules[i].room,
+                      starts: getTimeStatus(schedules[i]),
                       last: i == schedules.length - 1,
+                      isActive: controller.academicController.isActive(schedules[i])
                     ),
                 ],
               ),
@@ -66,6 +61,7 @@ Widget _scheduleItem({
   required String room,
   required String starts,
   required bool last,
+  required bool isActive
 }) {
   return SizedBox(
     height: 65,
@@ -104,8 +100,8 @@ Widget _scheduleItem({
                 child: Container(
                   width: 12,
                   height: 12,
-                  decoration: const BoxDecoration(
-                    color: AppColors.cyan,
+                  decoration: BoxDecoration(
+                    color: isActive ? Colors.green :AppColors.cyan ,
                     shape: BoxShape.circle,
                   ),
                 ),
@@ -199,35 +195,75 @@ Widget _scheduleItem({
   );
 }
 
-String getTimeRemaining(String time) {
+String getTimeStatus(ScheduleModel schedule) {
   final now = DateTime.now();
 
-  final parsed = DateFormat('hh:mm a').parse(time);
+  final start = _parseTime(schedule.startTime);
+  final end = _parseTime(schedule.endTime);
 
-  final target = DateTime(
-    now.year,
-    now.month,
-    now.day,
-    parsed.hour,
-    parsed.minute,
-  );
-
-  if (target.isBefore(now)) {
-    return 'Ended';
+  if (start == null || end == null) {
+    return "";
   }
 
-  final difference = target.difference(now);
+  // Class not started
+  if (now.isBefore(start)) {
+    final difference = start.difference(now);
 
-  final hours = difference.inHours;
-  final minutes = difference.inMinutes.remainder(60);
-
-  if (hours > 0) {
-    return '${hours}h ${minutes}m';
+    if (difference.inHours > 0) {
+      return "Starts in "
+          "${difference.inHours}h "
+          "${difference.inMinutes % 60}m";
+    } else {
+      return "Starts in "
+          "${difference.inMinutes} min";
+    }
   }
 
-  if (minutes > 0) {
-    return '${minutes}m';
+  // Class finished
+  if (now.isAfter(end)) {
+    return "Ended";
   }
 
-  return 'Starting';
+  // Currently running
+  return "Running";
+}
+
+DateTime? _parseTime(String time) {
+  try {
+    final now = DateTime.now();
+
+    /*
+      Example:
+      08:30 AM
+
+      split:
+      [
+        08:30,
+        AM
+      ]
+    */
+
+    final parts = time.trim().split(" ");
+
+    final hm = parts[0].split(":");
+
+    int hour = int.parse(hm[0]);
+    int minute = int.parse(hm[1]);
+
+    final period = parts[1];
+
+    if (period == "PM" && hour != 12) {
+      hour += 12;
+    }
+
+    if (period == "AM" && hour == 12) {
+      hour = 0;
+    }
+
+    return DateTime(now.year, now.month, now.day, hour, minute);
+  } catch (e) {
+    debugPrint("Time parse error: $e");
+
+    return null;
+  }
 }

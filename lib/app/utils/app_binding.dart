@@ -5,6 +5,7 @@ import 'package:ai_study_manager/app/modules/bus_schedule/bindings/bus_schedule_
 import 'package:ai_study_manager/app/modules/dashboard/bindings/dashboard_binding.dart';
 import 'package:ai_study_manager/app/modules/exam/bindings/exam_binding.dart';
 import 'package:ai_study_manager/app/modules/notice/bindings/notice_binding.dart';
+import 'package:ai_study_manager/app/modules/sidebar/bindings/sidebar_binding.dart';
 import 'package:ai_study_manager/app/modules/study_with_ai/bindings/study_with_ai_binding.dart';
 import 'package:ai_study_manager/app/modules/todo/bindings/todo_binding.dart';
 import 'package:get/get_instance/src/bindings_interface.dart';
@@ -13,6 +14,7 @@ class AppBinding extends Bindings {
   @override
   void dependencies() {
     final bindings = <Bindings>[
+      SidebarBinding(),
       AuthBinding(),
       DashboardBinding(),
       StudyWithAiBinding(),

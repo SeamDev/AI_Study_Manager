@@ -1,4 +1,3 @@
-import 'package:ai_study_manager/app/modules/auth/views/auth_view.dart';
 import 'package:ai_study_manager/app/routes/app_pages.dart';
 import 'package:ai_study_manager/app/utils/app_binding.dart';
 import 'package:ai_study_manager/app/utils/theme.dart';
@@ -27,7 +26,7 @@ class StudyWithAIApp extends StatelessWidget {
       theme: AppTheme.darkTheme,
       themeMode: ThemeMode.dark,
       initialBinding: AppBinding(),
-      home: const AuthView(),
+      initialRoute: AppPages.INITIAL,
     );
   }
 }

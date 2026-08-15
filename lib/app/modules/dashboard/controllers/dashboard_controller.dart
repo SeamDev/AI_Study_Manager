@@ -1,9 +1,11 @@
+import 'package:ai_study_manager/app/modules/academic_routine/controllers/academic_routine_controller.dart';
+import 'package:flutter/foundation.dart';
 import 'package:get/get.dart';
 import 'package:supabase_flutter/supabase_flutter.dart';
 
 class DashboardController extends GetxController {
   final SupabaseClient _supabase = Supabase.instance.client;
-
+  final academicController = Get.find<AcademicRoutineController>();
   // ----------------------------------------------------------
   // LOADING
   // ----------------------------------------------------------
@@ -25,9 +27,11 @@ class DashboardController extends GetxController {
   // DASHBOARD DATA
   // ----------------------------------------------------------
 
-  final classesToday = 0.obs;
+
   final homeworkDue = 0.obs;
   final examsUpcoming = 0.obs;
+
+  final RxList<Map<String, dynamic>> deadlines = <Map<String, dynamic>>[].obs;
 
   @override
   void onInit() {
@@ -43,17 +47,17 @@ class DashboardController extends GetxController {
   Future<void> loadDashboard() async {
     try {
       isLoading.value = true;
-
       await loadUserInfo();
 
       // Later you can load these from Supabase
-      await loadClasses();
       await loadHomework();
       await loadExams();
 
+      await upcomingDeadline();
+
       // deadline
     } catch (e) {
-      print('Dashboard error: $e');
+      debugPrint('Dashboard error: $e');
     } finally {
       isLoading.value = false;
     }
@@ -85,24 +89,10 @@ class DashboardController extends GetxController {
 
       initials.value = _getInitials(fullName.value);
     } catch (e) {
-      print('User info error: $e');
+      debugPrint('User info error: $e');
     }
   }
 
-  // ----------------------------------------------------------
-  // CLASSES
-  // ----------------------------------------------------------
-
-  Future<void> loadClasses() async {
-    try {
-      // TODO:
-      // Load today's classes from Supabase.
-
-      classesToday.value = 3;
-    } catch (e) {
-      print('Classes error: $e');
-    }
-  }
 
   // ----------------------------------------------------------
   // HOMEWORK
@@ -110,12 +100,9 @@ class DashboardController extends GetxController {
 
   Future<void> loadHomework() async {
     try {
-      // TODO:
-      // Load homework from Supabase.
-
       homeworkDue.value = 4;
     } catch (e) {
-      print('Homework error: $e');
+      debugPrint('Homework error: $e');
     }
   }
 
@@ -125,12 +112,91 @@ class DashboardController extends GetxController {
 
   Future<void> loadExams() async {
     try {
-      // TODO:
-      // Load upcoming exams from Supabase.
-
       examsUpcoming.value = 2;
     } catch (e) {
-      print('Exams error: $e');
+      debugPrint('Exams error: $e');
+    }
+  }
+
+  Future<void> todaySchedule() async {
+    try {
+      examsUpcoming.value = 2;
+    } catch (e) {
+      debugPrint('Exams error: $e');
+    }
+  }
+
+  // Deadline
+  Future<void> upcomingDeadline() async {
+    final user = _supabase.auth.currentUser;
+
+    if (user == null) {
+      deadlines.clear();
+      return;
+    }
+
+    try {
+      final today = DateTime.now().toIso8601String().split('T')[0];
+
+      // Get upcoming public deadlines
+      final deadlinesData = await _supabase
+          .from('deadlines')
+          .select()
+          .eq('semester', semester)
+          .eq('section', section)
+          .gte('due_date', today)
+          .order('due_date', ascending: true);
+
+      // Get only this user's completed deadlines
+      final completedData = await _supabase
+          .from('user_deadline_status')
+          .select('deadline_id')
+          .eq('user_id', user.id)
+          .eq('is_complete', true);
+
+      final completedIds = completedData
+          .map<int>((item) => item['deadline_id'] as int)
+          .toSet();
+
+      deadlines.assignAll(
+        deadlinesData.map<Map<String, dynamic>>((deadline) {
+          return {
+            ...deadline,
+            'isComplete': completedIds.contains(deadline['id']),
+          };
+        }).toList(),
+      );
+    } catch (e) {
+      debugPrint('Error getting upcoming deadlines: $e');
+      deadlines.clear();
+    }
+  }
+
+  Future<void> completeDeadline(int index) async {
+    final deadline = deadlines[index];
+    final deadlineId = deadline['id'];
+
+    // Optimistic UI update
+    deadline['isComplete'] = true;
+    deadlines.refresh();
+
+    try {
+      final user = _supabase.auth.currentUser;
+
+      if (user == null) {
+        throw Exception('User not logged in');
+      }
+
+      await _supabase.from('user_deadline_status').upsert({
+        'user_id': user.id,
+        'deadline_id': deadlineId,
+        'is_complete': true,
+      });
+    } catch (e) {
+      // Restore if database update fails
+      deadline['isComplete'] = false;
+      deadlines.refresh();
+      Get.snackbar('Error', 'Could not save deadline completion.');
     }
   }
 
@@ -159,46 +225,4 @@ class DashboardController extends GetxController {
   Future<void> refreshDashboard() async {
     await loadDashboard();
   }
-
-  // DeadLine To Do
-  final RxList<Map<String, dynamic>> deadlines = <Map<String, dynamic>>[
-    {
-      'id': 'database_midterm',
-      'title': 'Database Systems Midterm',
-      'code': 'CSE 204',
-      'priority': 'High',
-      'date': 'May 18, 2025',
-      'remaining': 'In 5 days',
-      'isComplete': false,
-    },
-    {
-      'id': 'discrete_math_midterm',
-      'title': 'Discrete Math Midterm',
-      'code': 'MATH 203',
-      'priority': 'Medium',
-      'date': 'May 19, 2025',
-      'remaining': 'In 8 days',
-      'isComplete': false,
-    },
-    {
-      'id': 'os_assignment',
-      'title': 'Operating Systems Assignment',
-      'code': 'CSE 205',
-      'priority': 'Medium',
-      'date': 'May 23, 2025',
-      'remaining': 'In 6 days',
-      'isComplete': false,
-    },
-    {
-      'id': 'networks_quiz',
-      'title': 'Computer Networks Quiz',
-      'code': 'CSE 206',
-      'priority': 'Low',
-      'date': 'May 23, 2025',
-      'remaining': 'In 10 days',
-      'isComplete': false,
-    },
-  ].obs;
-
-
 }

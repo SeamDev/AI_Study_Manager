@@ -11,14 +11,24 @@ class SummeryCard extends GetView<DashboardController> {
     return Row(
       children: [
         Expanded(
-          child: _summaryCard(
-            icon: Icons.menu_book_rounded,
-            color: Color(0xFF079BFF),
-            title: 'Classes Today',
-            number: '3',
-            subtitle: 'Next: 10:00 AM',
-            labels: ['Database Systems', 'Math Lab'],
-          ),
+          child: Obx(() {
+            final schedules = controller.academicController.todaySchedules;
+
+            final next = controller.academicController.nextClass;
+
+            return _summaryCard(
+              icon: Icons.menu_book_rounded,
+              color: const Color(0xFF079BFF),
+
+              title: 'Classes Today',
+
+              number: schedules.length.toString(),
+
+              subtitle: next != null ? 'Next: ${next.startTime}' : 'No class',
+
+              labels: schedules.map((e) => e.title).toList(),
+            );
+          }),
         ),
         const SizedBox(width: 14),
         Expanded(
@@ -55,7 +65,7 @@ class SummeryCard extends GetView<DashboardController> {
     required List<String> labels,
   }) {
     return Container(
-      height: 162,
+      height: 180,
       padding: const EdgeInsets.all(14),
       decoration: BoxDecoration(
         color: Color(0xFF061426),

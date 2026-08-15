@@ -39,16 +39,12 @@ class TodoController extends GetxController {
           .from('todos')
           .select()
           .eq('user_id', user.id)
+          .gte('date', DateTime.now().toIso8601String())
           .order('date', ascending: true);
 
-      todos.assignAll(
-        List<Map<String, dynamic>>.from(data),
-      );
+      todos.assignAll(List<Map<String, dynamic>>.from(data));
     } catch (e) {
-      Get.snackbar(
-        'Error',
-        'Failed to load todos',
-      );
+      Get.snackbar('Error', 'Failed to load todos');
     } finally {
       isLoading.value = false;
     }
@@ -81,15 +77,9 @@ class TodoController extends GetxController {
 
       Get.back();
 
-      Get.snackbar(
-        'Success',
-        'Todo created',
-      );
+      Get.snackbar('Success', 'Todo created');
     } catch (e) {
-      Get.snackbar(
-        'Error',
-        'Failed to create todo',
-      );
+      Get.snackbar('Error', 'Failed to create todo');
     }
   }
 
@@ -104,18 +94,13 @@ class TodoController extends GetxController {
 
       await supabase
           .from('todos')
-          .update({
-            'is_complete': !current,
-          })
+          .update({'is_complete': !current})
           .eq('id', id)
           .eq('user_id', supabase.auth.currentUser!.id);
 
       await loadTodos();
     } catch (e) {
-      Get.snackbar(
-        'Error',
-        'Failed to update todo',
-      );
+      Get.snackbar('Error', 'Failed to update todo');
     }
   }
 
@@ -133,10 +118,7 @@ class TodoController extends GetxController {
 
       await loadTodos();
     } catch (e) {
-      Get.snackbar(
-        'Error',
-        'Failed to delete todo',
-      );
+      Get.snackbar('Error', 'Failed to delete todo');
     }
   }
 }

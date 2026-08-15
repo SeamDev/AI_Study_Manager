@@ -93,10 +93,7 @@ class DeadlineCard extends GetView<DashboardController> {
                   remaining: deadline['remaining'] ?? "",
                   color: color,
                   isComplete: deadline['isComplete'] ?? false,
-                  onTap: () {
-                    deadline['isComplete'] = true;
-                    controller.deadlines.refresh();
-                  },
+                  onTap: () => controller.completeDeadline(index),
                 );
               },
             );
@@ -127,17 +124,18 @@ Widget _deadline({
       children: [
         const SizedBox(width: 12),
 
-        if (!isComplete) GestureDetector(
-          onTap: onTap,
-          child: Container(
-            width: 20,
-            height: 20,
-            decoration: BoxDecoration(
-              shape: BoxShape.circle,
-              border: Border.all(color: AppColors.secondaryText),
+        if (!isComplete)
+          GestureDetector(
+            onTap: onTap,
+            child: Container(
+              width: 20,
+              height: 20,
+              decoration: BoxDecoration(
+                shape: BoxShape.circle,
+                border: Border.all(color: AppColors.secondaryText),
+              ),
             ),
           ),
-        ),
 
         const SizedBox(width: 12),
 
@@ -339,8 +337,7 @@ class DeadlineViewAll extends GetView<DashboardController> {
       color: color,
       isComplete: deadline['isComplete'] ?? false,
       onTap: () {
-        controller.deadlines[index]['isComplete'] = true;
-        controller.deadlines.refresh();
+        controller.completeDeadline(index);
       },
     );
   }
