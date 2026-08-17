@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import 'package:get/get.dart';
 
 import '../../../utils/app_color.dart';
@@ -321,7 +322,13 @@ class ScheduleTile extends StatelessWidget {
                       ),
                       const Spacer(),
                       ElevatedButton.icon(
-                        onPressed: () {},
+                        onPressed: () {
+                          Clipboard.setData(
+                            ClipboardData(text: schedule.number),
+                          );
+
+                          Get.snackbar('Copied', 'Phone number copied');
+                        },
                         label: Text("Copy Number"),
                         icon: Icon(Icons.copy),
                       ),

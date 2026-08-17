@@ -168,7 +168,7 @@ class AiChatView extends GetView<StudyWithAiController> {
         children: [
           Expanded(
             child: TextField(
-              controller: controller.text,
+              controller: controller.textController,
 
               style: const TextStyle(color: AppColors.text),
 

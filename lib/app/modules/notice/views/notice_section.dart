@@ -1,12 +1,42 @@
 import 'package:ai_study_manager/app/models/notice_model.dart';
 import 'package:flutter/material.dart';
 import '../../../utils/app_color.dart';
+import 'package:dio/dio.dart';
+import 'package:universal_html/html.dart' as html;
 
 class NoticeSection extends StatelessWidget {
   final String title;
   final List<NoticeModel> notices;
 
   const NoticeSection({super.key, required this.title, required this.notices});
+
+  Future<void> downloadFileWithDio(String url, String fileName) async {
+    try {
+      final dio = Dio();
+
+      // 1. Fetch the file bytes
+      final response = await dio.get<List<int>>(
+        url,
+        options: Options(responseType: ResponseType.bytes),
+      );
+
+      if (response.data != null) {
+        // 2. Create the blob and object URL using familiar syntax
+        final blob = html.Blob([response.data]);
+        final objectUrl = html.Url.createObjectUrlFromBlob(blob);
+
+        // 3. Trigger the browser download dialog
+        html.AnchorElement(href: objectUrl)
+          ..setAttribute("download", fileName)
+          ..click();
+
+        // 4. Clean up memory
+        html.Url.revokeObjectUrl(objectUrl);
+      }
+    } catch (e) {
+      print("Download failed: $e");
+    }
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -16,7 +46,7 @@ class NoticeSection extends StatelessWidget {
       children: [
         Padding(
           padding: const EdgeInsets.symmetric(vertical: 12),
-          
+
           child: Text(
             title,
 
@@ -97,22 +127,60 @@ class NoticeSection extends StatelessWidget {
                   childAspectRatio: 1.5,
                 ),
                 itemBuilder: (context, index) {
-                  return ClipRRect(
-                    borderRadius: BorderRadius.circular(10),
-                    child: Image.network(
-                      notice.imageUrls[index],
-                      width: double.infinity,
-                      height: double.infinity,
-                      fit: BoxFit.cover,
-                      errorBuilder: (_, _, _) {
-                        return Container(
-                          color: AppColors.background,
-                          child: const Icon(
-                            Icons.broken_image_outlined,
-                            color: AppColors.secondaryText,
+                  return GestureDetector(
+                    onTap: () {
+                      downloadFileWithDio(
+                        notice.imageUrls[index],
+                        notice.imageUrls[index].split("/").last,
+                      );
+                    },
+                    child: ClipRRect(
+                      borderRadius: BorderRadius.circular(10),
+                      child: Stack(
+                        fit: StackFit.expand,
+                        children: [
+                          Image.network(
+                            notice.imageUrls[index],
+                            fit: BoxFit.cover,
+                            errorBuilder: (_, _, _) {
+                              return Container(
+                                color: AppColors.background,
+                                child: const Icon(
+                                  Icons.broken_image_outlined,
+                                  color: AppColors.secondaryText,
+                                ),
+                              );
+                            },
                           ),
-                        );
-                      },
+
+                          // Download overlay button
+                          Positioned(
+                            right: 10,
+                            bottom: 10,
+                            child: InkWell(
+                              onTap: () {
+                                downloadFileWithDio(
+                                  notice.imageUrls[index],
+                                  notice.imageUrls[index].split("/").last,
+                                );
+                              },
+                              borderRadius: BorderRadius.circular(30),
+                              child: Container(
+                                padding: const EdgeInsets.all(10),
+                                decoration: BoxDecoration(
+                                  color: Colors.black54,
+                                  shape: BoxShape.circle,
+                                ),
+                                child: Icon(
+                                  Icons.download_rounded,
+                                  color: Colors.white.withValues(alpha: 0.4),
+                                  size: 24,
+                                ),
+                              ),
+                            ),
+                          ),
+                        ],
+                      ),
                     ),
                   );
                 },
@@ -134,9 +202,14 @@ class NoticeSection extends StatelessWidget {
                     padding: const EdgeInsets.only(bottom: 8),
                     child: InkWell(
                       borderRadius: BorderRadius.circular(10),
+
                       onTap: () {
-                        // launchUrl(Uri.parse(item.link));
+                        downloadFileWithDio(
+                          item.link,
+                          "${item.label}.${item.link.split(".").last}",
+                        );
                       },
+
                       child: Container(
                         width: double.infinity,
                         padding: const EdgeInsets.symmetric(

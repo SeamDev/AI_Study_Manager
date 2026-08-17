@@ -21,7 +21,7 @@ class ChatMessage {
 }
 
 class StudyWithAiController extends GetxController {
-  final TextEditingController text = TextEditingController();
+  final TextEditingController textController = TextEditingController();
 
   final messages = <ChatMessage>[].obs;
 
@@ -75,14 +75,14 @@ class StudyWithAiController extends GetxController {
   // Send question and get AI answer
 
   Future<void> getResponse() async {
-    final question = text.text.trim();
+    final question = textController.text.trim();
 
     if (question.isEmpty) return;
 
     addMessage(ChatMessage(text: question, isUser: true));
     messages.add(ChatMessage(text: "AI is Typing...", isUser: false));
 
-    text.clear();
+    textController.clear();
 
     isLoading = true;
 
@@ -91,7 +91,8 @@ class StudyWithAiController extends GetxController {
     try {
       const apiUrl = "https://api.featherless.ai/v1/chat/completions";
 
-      const apiKey = "rc_6422c36f4b8952d652fe5c44570006cdf99703438a3ab4826bc2c1a654338525";
+      const apiKey =
+          "rc_6422c36f4b8952d652fe5c44570006cdf99703438a3ab4826bc2c1a654338525";
 
       // Send previous conversation
 
@@ -121,9 +122,10 @@ class StudyWithAiController extends GetxController {
         final data = jsonDecode(response.body);
 
         final answer = data["choices"][0]["message"]["content"];
-        
+
         addMessage(ChatMessage(text: answer, isUser: false));
       } else {
+        print(response.body);
         addMessage(
           ChatMessage(text: "API Error: ${response.statusCode}", isUser: false),
         );
@@ -148,7 +150,7 @@ class StudyWithAiController extends GetxController {
 
   @override
   void onClose() {
-    text.dispose();
+    textController.dispose();
 
     super.onClose();
   }

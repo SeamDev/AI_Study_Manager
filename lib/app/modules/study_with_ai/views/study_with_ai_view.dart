@@ -605,8 +605,9 @@ class StudyWithAiView extends GetView<StudyWithAiController> {
 
           Expanded(
             child: TextField(
+              controller: controller.textController,
               style: const TextStyle(color: AppColors.text),
-
+              minLines: 1,maxLines: 5,
               decoration: InputDecoration(
                 hintText: "Ask me anything about your studies...",
 

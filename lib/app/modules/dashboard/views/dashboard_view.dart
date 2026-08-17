@@ -1,3 +1,4 @@
+import 'package:ai_study_manager/app/modules/dashboard/views/ai_assistant_card.dart';
 import 'package:ai_study_manager/app/modules/dashboard/views/bus_card.dart';
 import 'package:ai_study_manager/app/modules/dashboard/views/deadline_card.dart';
 import 'package:ai_study_manager/app/modules/dashboard/views/schedule_card.dart';
@@ -55,7 +56,7 @@ class DashboardView extends GetView<DashboardController> {
 
           const SizedBox(height: 16),
 
-          _buildAIAssistant(controller),
+          AiAssistantCard(),
 
           const SizedBox(height: 8),
 
@@ -197,151 +198,6 @@ Widget _buildProgressCard() {
   });
 }
 
-// ----------------------------------------------------------
-// AI ASSISTANT
-// ----------------------------------------------------------
-
-Widget _buildAIAssistant(DashboardController controller) {
-  return Container(
-    padding: const EdgeInsets.all(14),
-    decoration: BoxDecoration(
-      color: const Color(0xFF051426),
-      borderRadius: BorderRadius.circular(12),
-      border: Border.all(color: const Color(0xFF102E4D)),
-    ),
-    child: Row(
-      crossAxisAlignment: CrossAxisAlignment.center,
-      children: [
-        // AI icon
-        Container(
-          width: 75,
-          height: 75,
-          decoration: BoxDecoration(
-            shape: BoxShape.circle,
-            border: Border.all(color: AppColors.blue, width: 2),
-            boxShadow: const [
-              BoxShadow(color: Color(0x554A00FF), blurRadius: 18),
-            ],
-          ),
-          child: Container(
-            margin: const EdgeInsets.all(8),
-            decoration: const BoxDecoration(
-              shape: BoxShape.circle,
-              color: Color(0xFF15144C),
-            ),
-            child: const Icon(
-              Icons.smart_toy_rounded,
-              color: Colors.white,
-              size: 38,
-            ),
-          ),
-        ),
-
-        const SizedBox(width: 15),
-
-        Expanded(
-          child: Column(
-            crossAxisAlignment: CrossAxisAlignment.start,
-            children: [
-              const Text(
-                'AI Study Assistant',
-                style: TextStyle(fontSize: 17, fontWeight: FontWeight.w500),
-              ),
-
-              const SizedBox(height: 2),
-
-              Obx(
-                () => Text(
-                  'Hi ${controller.fullName.value}! 👋',
-                  style: const TextStyle(
-                    color: AppColors.secondaryText,
-                    fontSize: 12,
-                  ),
-                ),
-              ),
-
-              const SizedBox(height: 2),
-
-              const Text(
-                'How can I help you with your studies today?',
-                style: TextStyle(color: AppColors.secondaryText, fontSize: 11),
-              ),
-
-              const SizedBox(height: 10),
-
-              Container(
-                height: 42,
-                decoration: BoxDecoration(
-                  color: const Color(0xFF07182A),
-                  borderRadius: BorderRadius.circular(8),
-                  border: Border.all(color: const Color(0xFF122E49)),
-                ),
-                padding: const EdgeInsets.symmetric(horizontal: 13),
-                alignment: Alignment.centerLeft,
-                child: const Text(
-                  'Ask me anything about your studies...',
-                  style: TextStyle(
-                    color: AppColors.secondaryText,
-                    fontSize: 13,
-                  ),
-                ),
-              ),
-            ],
-          ),
-        ),
-
-        const SizedBox(width: 15),
-
-        Expanded(
-          flex: 3,
-          child: Wrap(
-            spacing: 8,
-            runSpacing: 8,
-            children: [
-              _aiButton('Explain this concept'),
-              _aiButton('Summarize my assignments'),
-              _aiButton('What should I study today?'),
-              _aiButton('Create a study plan'),
-              _aiButton('Quiz me'),
-              _aiButton('•••'),
-            ],
-          ),
-        ),
-
-        const SizedBox(width: 10),
-
-        Container(
-          width: 54,
-          height: 54,
-          decoration: BoxDecoration(
-            color: const Color(0xFF08304A),
-            borderRadius: BorderRadius.circular(9),
-          ),
-          child: const Icon(
-            Icons.send_rounded,
-            color: AppColors.cyan,
-            size: 27,
-          ),
-        ),
-      ],
-    ),
-  );
-}
-
-Widget _aiButton(String text) {
-  return Container(
-    padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 9),
-    decoration: BoxDecoration(
-      color: const Color(0xFF071C35),
-      borderRadius: BorderRadius.circular(7),
-      border: Border.all(color: const Color(0xFF103456)),
-    ),
-    child: Text(
-      text,
-      style: const TextStyle(color: Colors.white, fontSize: 11),
-    ),
-  );
-}
 
 // ----------------------------------------------------------
 // Notifiation

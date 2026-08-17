@@ -1,5 +1,6 @@
 import 'package:ai_study_manager/app/modules/academic_routine/controllers/academic_routine_controller.dart';
-import 'package:flutter/foundation.dart';
+import 'package:ai_study_manager/app/modules/study_with_ai/controllers/study_with_ai_controller.dart';
+import 'package:flutter/widgets.dart';
 import 'package:get/get.dart';
 import 'package:supabase_flutter/supabase_flutter.dart';
 
@@ -32,6 +33,9 @@ class DashboardController extends GetxController {
   final examsUpcoming = 0.obs;
 
   final RxList<Map<String, dynamic>> deadlines = <Map<String, dynamic>>[].obs;
+
+  TextEditingController aiTextController = TextEditingController(text: "Hello");
+  final StudyWithAiController studyWithAiController = Get.find<StudyWithAiController>();
 
   @override
   void onInit() {

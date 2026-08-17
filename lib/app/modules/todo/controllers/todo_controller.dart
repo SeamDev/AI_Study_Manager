@@ -39,7 +39,6 @@ class TodoController extends GetxController {
           .from('todos')
           .select()
           .eq('user_id', user.id)
-          .gte('date', DateTime.now().toIso8601String())
           .order('date', ascending: true);
 
       todos.assignAll(List<Map<String, dynamic>>.from(data));
@@ -51,7 +50,7 @@ class TodoController extends GetxController {
   }
 
   // =========================
-  // CREATE TODO
+  // CREATE TODo
   // =========================
 
   Future<void> createTodo({
