@@ -11,16 +11,22 @@ class BusScheduleView extends GetView<BusScheduleController> {
 
   static const List<Map<String, dynamic>> buses = [
     {
-      'name': 'Green Line',
-      'destinations': ['Campus → Court Station', 'Campus → City'],
-      'startTimes': [
-        '08:00 AM',
-        '10:00 AM',
-        '01:00 PM',
-        '03:00 PM',
-        '05:00 PM',
-      ],
-      'week': ['Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday'],
+      'name': 'Bus : Court Station',
+      'destinations': ['Court Station → Campus'],
+      'startTimes': ['08:15 AM', '9:20 AM', '01:10 PM'],
+      'week': ['Sunday', 'Monday', 'Tuesday', 'Wednesday', 'Thursday'],
+    },
+    {
+      'name': 'Bus : Veripara',
+      'destinations': ['Veripara → Campus'],
+      'startTimes': ['08:00 AM', '9:20 AM', '01:10 PM'],
+      'week': ['Sunday', 'Monday', 'Tuesday', 'Wednesday', 'Thursday'],
+    },
+    {
+      'name': 'Bus : Campus',
+      'destinations': ['Campus → Court Station','Campus → Veripara'],
+      'startTimes': ['12:25 PM', '04:15 PM'],
+      'week': ['Sunday', 'Monday', 'Tuesday', 'Wednesday', 'Thursday'],
     },
   ];
 

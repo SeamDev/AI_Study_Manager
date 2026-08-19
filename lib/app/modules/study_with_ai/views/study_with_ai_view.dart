@@ -1,4 +1,5 @@
 import 'package:ai_study_manager/app/routes/app_pages.dart';
+import 'package:ai_study_manager/app/utils/ai_promt.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 
@@ -7,6 +8,36 @@ import '../controllers/study_with_ai_controller.dart';
 
 class StudyWithAiView extends GetView<StudyWithAiController> {
   const StudyWithAiView({super.key});
+
+  void promtExplain() {
+    controller.isPromt.value = "Explain this concept";
+    controller.promtTXT = AiPrompt.explainThisConcept;
+    Get.toNamed(Routes.AI_CHAT);
+  }
+
+  void promtSummerize() {
+    controller.isPromt.value = "Summarize my assignments";
+    controller.promtTXT = AiPrompt.summerizeMyAssainment;
+    Get.toNamed(Routes.AI_CHAT);
+  }
+
+  void promtWhatShould() {
+    controller.isPromt.value = "What should I study today?";
+    controller.promtTXT = AiPrompt.whatShouldIstudyToday;
+    Get.toNamed(Routes.AI_CHAT);
+  }
+
+  void promtStudy() {
+    controller.isPromt.value = "Create a study plan";
+    controller.promtTXT = AiPrompt.createAstudyPlan;
+    Get.toNamed(Routes.AI_CHAT);
+  }
+
+  void promtQuiz() {
+    controller.isPromt.value = "Quiz me";
+    controller.promtTXT = AiPrompt.quizMe;
+    Get.toNamed(Routes.AI_CHAT);
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -153,15 +184,38 @@ class StudyWithAiView extends GetView<StudyWithAiController> {
             runSpacing: 12,
 
             children: [
-              _action(Icons.lightbulb, "Explain Concepts", AppColors.purple),
+              GestureDetector(
+                onTap: promtExplain,
+                child: _action(
+                  Icons.lightbulb,
+                  "Explain Concepts",
+                  AppColors.purple,
+                ),
+              ),
 
-              _action(Icons.summarize, "Summarize", AppColors.cyan),
+              GestureDetector(
+                onTap: promtSummerize,
+                child: _action(Icons.summarize, "Summarize", AppColors.cyan),
+              ),
 
-              _action(Icons.calendar_month, "Study Plan", AppColors.yellow),
+              GestureDetector(
+                onTap: promtStudy,
+                child: _action(
+                  Icons.calendar_month,
+                  "Study Plan",
+                  AppColors.yellow,
+                ),
+              ),
 
-              _action(Icons.quiz, "Quiz Me", AppColors.green),
+              GestureDetector(
+                onTap: promtQuiz,
+                child: _action(Icons.quiz, "Quiz Me", AppColors.green),
+              ),
 
-              _action(Icons.help, "What to Study?", AppColors.purple),
+              GestureDetector(
+                onTap: promtWhatShould,
+                child: _action(Icons.help, "What to Study?", AppColors.purple),
+              ),
             ],
           ),
         ],
@@ -236,39 +290,54 @@ class StudyWithAiView extends GetView<StudyWithAiController> {
           childAspectRatio: 1.2,
 
           children: [
-            _promptCard(
-              Icons.question_mark,
-              "Explain This Concept",
-              "Get simple explanations for any topic.",
-              AppColors.purple,
+            GestureDetector(
+              onTap: promtExplain,
+              child: _promptCard(
+                Icons.question_mark,
+                "Explain This Concept",
+                "Get simple explanations for any topic.",
+                AppColors.purple,
+              ),
             ),
 
-            _promptCard(
-              Icons.description,
-              "Summarize My Assignments",
-              "Get a summary of your assignments.",
-              AppColors.blue,
+            GestureDetector(
+              onTap: promtSummerize,
+              child: _promptCard(
+                Icons.description,
+                "Summarize My Assignments",
+                "Get a summary of your assignments.",
+                AppColors.blue,
+              ),
             ),
 
-            _promptCard(
-              Icons.calendar_month,
-              "What Should I Study Today?",
-              "Get personalized recommendations.",
-              AppColors.green,
+            GestureDetector(
+              onTap: promtWhatShould,
+              child: _promptCard(
+                Icons.calendar_month,
+                "What Should I Study Today?",
+                "Get personalized recommendations.",
+                AppColors.green,
+              ),
             ),
 
-            _promptCard(
-              Icons.track_changes,
-              "Create a Study Plan",
-              "Generate plan based on exams.",
-              AppColors.orange,
+            GestureDetector(
+              onTap: promtStudy,
+              child: _promptCard(
+                Icons.track_changes,
+                "Create a Study Plan",
+                "Generate plan based on exams.",
+                AppColors.orange,
+              ),
             ),
 
-            _promptCard(
-              Icons.psychology,
-              "Quiz Me",
-              "Test your knowledge with AI.",
-              AppColors.red,
+            GestureDetector(
+              onTap: promtQuiz,
+              child: _promptCard(
+                Icons.psychology,
+                "Quiz Me",
+                "Test your knowledge with AI.",
+                AppColors.red,
+              ),
             ),
           ],
         ),
@@ -607,7 +676,8 @@ class StudyWithAiView extends GetView<StudyWithAiController> {
             child: TextField(
               controller: controller.textController,
               style: const TextStyle(color: AppColors.text),
-              minLines: 1,maxLines: 5,
+              minLines: 1,
+              maxLines: 5,
               decoration: InputDecoration(
                 hintText: "Ask me anything about your studies...",
 

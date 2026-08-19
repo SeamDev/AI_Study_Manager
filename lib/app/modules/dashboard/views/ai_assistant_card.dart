@@ -1,5 +1,6 @@
 import 'package:ai_study_manager/app/modules/dashboard/controllers/dashboard_controller.dart';
 import 'package:ai_study_manager/app/routes/app_pages.dart';
+import 'package:ai_study_manager/app/utils/ai_promt.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 
@@ -124,27 +125,50 @@ class AiAssistantCard extends GetView<DashboardController> {
               runSpacing: 8,
               children: [
                 GestureDetector(
-                  onTap: () => controller.aiTextController.text =
-                      'Explain this concept ',
+                  onTap: () {
+                    controller.studyWithAiController.promtTXT =
+                        AiPrompt.explainThisConcept;
+                    controller.studyWithAiController.isPromt.value =
+                        'Explain this concept';
+                    controller.aiTextController.text = "Content : ";
+                  },
                   child: _aiButton('Explain this concept'),
                 ),
                 GestureDetector(
-                  onTap: () => controller.aiTextController.text =
-                      'Summarize my assignments ',
+                  onTap: () {
+                    controller.studyWithAiController.promtTXT =
+                        AiPrompt.summerizeMyAssainment;
+                    controller.studyWithAiController.isPromt.value =
+                        'Summarize my assignments';
+                    controller.aiTextController.text = "Content : ";
+                  },
                   child: _aiButton('Summarize my assignments'),
                 ),
                 GestureDetector(
-                  onTap: () => controller.aiTextController.text =
-                      'What should I study today? ',
+                  onTap: () {
+                    controller.studyWithAiController.promtTXT =
+                        AiPrompt.whatShouldIstudyToday;
+                    controller.studyWithAiController.isPromt.value =
+                        'What should I study today?';
+                    controller.aiTextController.text = "Content : ";
+                  },
                   child: _aiButton('What should I study today?'),
                 ),
                 GestureDetector(
-                  onTap: () =>
-                      controller.aiTextController.text = 'Create a study plan ',
+                  onTap: () {
+                    controller.studyWithAiController.promtTXT =
+                        AiPrompt.createAstudyPlan;
+                    controller.studyWithAiController.isPromt.value =
+                        'Create a study plan';
+                    controller.aiTextController.text = "Content : ";
+                  },
                   child: _aiButton('Create a study plan'),
                 ),
                 GestureDetector(
-                  onTap: () => controller.studyWithAiController.textController.text = 'Quiz me ',
+                  onTap: () {
+                    controller.studyWithAiController.promtTXT = AiPrompt.quizMe;
+                    controller.studyWithAiController.isPromt.value = 'Quiz me';
+                  },
                   child: _aiButton('Quiz me'),
                 ),
 

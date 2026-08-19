@@ -34,7 +34,8 @@ class DashboardController extends GetxController {
 
   final RxList<Map<String, dynamic>> deadlines = <Map<String, dynamic>>[].obs;
 
-  TextEditingController aiTextController = TextEditingController(text: "Hello");
+  TextEditingController aiTextController = TextEditingController();
+
   final StudyWithAiController studyWithAiController = Get.find<StudyWithAiController>();
 
   @override

@@ -1,3 +1,5 @@
+import 'dart:typed_data';
+
 import 'package:ai_study_manager/app/utils/theme.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
@@ -17,15 +19,15 @@ class AiChatView extends GetView<StudyWithAiController> {
         child: Column(
           children: [
             _buildTopBar(),
-        
+
             Expanded(
               child: Obx(
                 () => ListView.builder(
                   itemCount: controller.messages.length,
-        
+                  controller: controller.scrollController,
                   itemBuilder: (context, index) {
                     final msg = controller.messages[index];
-        
+
                     return msg.isUser
                         ? _userMessage(msg.text)
                         : _aiMessage(msg.text);
@@ -33,7 +35,95 @@ class AiChatView extends GetView<StudyWithAiController> {
                 ),
               ),
             ),
-        
+            Obx(() {
+              final image = controller.selectedImage.value;
+
+              if (image == null) {
+                return const SizedBox.shrink();
+              }
+
+              return Align(
+                alignment: Alignment.centerLeft,
+                child: FutureBuilder<Uint8List>(
+                  future: image.readAsBytes(),
+                  builder: (context, snapshot) {
+                    if (!snapshot.hasData) {
+                      return const SizedBox(
+                        width: 80,
+                        height: 80,
+                        child: Center(child: CircularProgressIndicator()),
+                      );
+                    }
+
+                    return Row(
+                      mainAxisSize: MainAxisSize.min,
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: [
+                        ClipRRect(
+                          borderRadius: BorderRadius.circular(12),
+                          child: Image.memory(
+                            snapshot.data!,
+                            width: 80,
+                            height: 80,
+                            fit: BoxFit.cover,
+                          ),
+                        ),
+
+                        const SizedBox(width: 4),
+
+                        IconButton(
+                          onPressed: controller.removeSelectedImage,
+                          padding: EdgeInsets.zero,
+                          constraints: const BoxConstraints(),
+                          icon: const Icon(
+                            Icons.close,
+                            color: Colors.white,
+                            size: 20,
+                          ),
+                        ),
+                      ],
+                    );
+                  },
+                ),
+              );
+            }),
+            Obx(() {
+              if (controller.isPromt.value.isEmpty) {
+                return const SizedBox.shrink();
+              }
+
+              return Align(
+                alignment: Alignment.centerLeft,
+                child: Row(
+                  mainAxisSize: MainAxisSize.min,
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    Container(
+                      padding: EdgeInsets.all(5),
+                      decoration: BoxDecoration(
+                        border: Border.all(color: Colors.white),
+                        borderRadius: BorderRadius.circular(5)
+                      ),
+                      child: Text(controller.isPromt.value),
+                    ),
+
+                    const SizedBox(width: 4),
+
+                    IconButton(
+                      onPressed: ()=> controller.isPromt.value = "",
+                      padding: EdgeInsets.zero,
+                      constraints: const BoxConstraints(),
+                      icon: const Icon(
+                        Icons.close,
+                        color: Colors.white,
+                        size: 20,
+                      ),
+                    ),
+                  ],
+                ),
+              );
+            }),
+
             _inputBox(),
           ],
         ),
@@ -166,6 +256,18 @@ class AiChatView extends GetView<StudyWithAiController> {
 
       child: Row(
         children: [
+          IconButton(
+            onPressed: controller.pickImage,
+            icon: const Icon(Icons.image_outlined),
+          ),
+
+          // =============================================
+          // CAMERA BUTTON
+          // =============================================
+          IconButton(
+            onPressed: controller.takePicture,
+            icon: const Icon(Icons.camera_alt_outlined),
+          ),
           Expanded(
             child: TextField(
               controller: controller.textController,
@@ -188,11 +290,6 @@ class AiChatView extends GetView<StudyWithAiController> {
                 filled: true,
 
                 fillColor: AppColors.card,
-
-                prefixIcon: const Icon(
-                  Icons.attach_file,
-                  color: AppColors.secondaryText,
-                ),
 
                 border: OutlineInputBorder(
                   borderRadius: BorderRadius.circular(30),

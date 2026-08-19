@@ -86,7 +86,7 @@ Widget _scheduleItem({
   required bool isActive,
 }) {
   return SizedBox(
-    height: 65,
+    height: 71,
     child: Row(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
