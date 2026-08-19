@@ -3,6 +3,7 @@ import 'package:ai_study_manager/app/services/auth_service.dart';
 import 'package:ai_study_manager/app/services/database_services.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
+import 'package:hive/hive.dart';
 
 class AppColors {
   static const background = Color(0xFF020B1A);
@@ -26,16 +27,12 @@ class AppColors {
 class SidebarController extends GetxController {
   final selectedIndex = 0.obs;
 
-  void changePage(int index) {
-    selectedIndex.value = index;
-  }
-
   final List<String> menuItems = [
     'Dashboard',
     'Study With AI',
     'Notice',
     'Academic Routine',
-    'Assessments',
+    'Assessments /\nHome Work',
     'To Do',
     'Exams',
     'Bus Schedule',
@@ -79,8 +76,22 @@ class SidebarController extends GetxController {
   @override
   void onInit() {
     super.onInit();
-
+    loadSelectedIndex();
     loadUserInfo();
+  }
+
+  Future<void> loadSelectedIndex() async {
+    final box = Hive.box("chatBox");
+
+    selectedIndex.value = box.get("index", defaultValue: 0) as int;
+  }
+
+  Future<void> changePage(int index) async {
+    selectedIndex.value = index;
+
+    final box = Hive.box('chatBox');
+
+    await box.put('index', index);
   }
 
   Future<void> loadUserInfo() async {

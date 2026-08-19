@@ -118,7 +118,7 @@ class SidebarView extends GetView<SidebarController> {
                             padding: const EdgeInsets.only(bottom: 10),
                             child: GestureDetector(
                               onTap: () {
-                                controller.selectedIndex.value = index;
+                                controller.changePage(index);
                               },
                               child: AnimatedContainer(
                                 duration: const Duration(milliseconds: 200),

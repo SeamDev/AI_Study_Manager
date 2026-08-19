@@ -9,50 +9,52 @@ class AssesmentSummery extends GetView<AssessmentsController> {
 
   @override
   Widget build(BuildContext context) {
-    return GridView.count(
-      shrinkWrap: true,
+    return Obx(() {
+      return GridView.count(
+        shrinkWrap: true,
 
-      physics: const NeverScrollableScrollPhysics(),
+        physics: const NeverScrollableScrollPhysics(),
 
-      crossAxisCount: 4,
+        crossAxisCount: 4,
 
-      crossAxisSpacing: 14,
-      childAspectRatio: 3,
+        crossAxisSpacing: 14,
+        childAspectRatio: 3,
 
-      children: [
-        _summaryCard(
-          Icons.assignment,
-          "Total",
-          "24",
-          "All Assignments",
-          AppColors.blue,
-        ),
+        children: [
+          _summaryCard(
+            Icons.assignment,
+            "Total",
+            controller.assessments.length.toString(),
+            "All Assignments",
+            AppColors.blue,
+          ),
 
-        _summaryCard(
-          Icons.access_time,
-          "Pending",
-          "12",
-          "Awaiting Submission",
-          AppColors.orange,
-        ),
+          _summaryCard(
+            Icons.access_time,
+            "Pending",
+            controller.pendingCount.toString(),
+            "Awaiting Submission",
+            AppColors.orange,
+          ),
 
-        _summaryCard(
-          Icons.check_circle,
-          "Completed",
-          "9",
-          "Submitted",
-          AppColors.green,
-        ),
+          _summaryCard(
+            Icons.check_circle,
+            "Completed",
+            controller.completedCount.toString(),
+            "Submitted",
+            AppColors.green,
+          ),
 
-        _summaryCard(
-          Icons.error,
-          "Overdue",
-          "3",
-          "Past Due Date",
-          AppColors.red,
-        ),
-      ],
-    );
+          _summaryCard(
+            Icons.error,
+            "Overdue",
+            controller.overdueCount.toString(),
+            "Past Due Date",
+            AppColors.red,
+          ),
+        ],
+      );
+    });
   }
 
   Widget _summaryCard(
@@ -86,7 +88,7 @@ class AssesmentSummery extends GetView<AssessmentsController> {
               borderRadius: BorderRadius.circular(8),
             ),
 
-            child: Icon(icon, color: color,size: 36,),
+            child: Icon(icon, color: color, size: 36),
           ),
 
           const SizedBox(width: 14),

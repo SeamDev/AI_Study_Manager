@@ -65,12 +65,12 @@ class SummeryCard extends GetView<DashboardController> {
     required List<String> labels,
   }) {
     return Container(
-      height: 180,
+      constraints: const BoxConstraints(minHeight: 180),
       padding: const EdgeInsets.all(14),
       decoration: BoxDecoration(
-        color: Color(0xFF061426),
+        color: const Color(0xFF061426),
         borderRadius: BorderRadius.circular(11),
-        border: Border.all(color: Color(0xFF102C49)),
+        border: Border.all(color: const Color(0xFF102C49)),
       ),
       child: Row(
         crossAxisAlignment: CrossAxisAlignment.start,
@@ -79,7 +79,7 @@ class SummeryCard extends GetView<DashboardController> {
             width: 56,
             height: 56,
             decoration: BoxDecoration(
-              color: color.withOpacity(.25),
+              color: color.withValues(alpha: .25),
               borderRadius: BorderRadius.circular(11),
             ),
             child: Icon(icon, color: color, size: 31),
@@ -90,6 +90,7 @@ class SummeryCard extends GetView<DashboardController> {
           Expanded(
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
+              mainAxisSize: MainAxisSize.min,
               children: [
                 Text(
                   title,
@@ -108,7 +109,7 @@ class SummeryCard extends GetView<DashboardController> {
 
                 Text(subtitle, style: const TextStyle(fontSize: 12)),
 
-                const Spacer(),
+                const SizedBox(height: 16),
 
                 Wrap(
                   spacing: 6,
@@ -120,7 +121,7 @@ class SummeryCard extends GetView<DashboardController> {
                         vertical: 6,
                       ),
                       decoration: BoxDecoration(
-                        color: color.withOpacity(.12),
+                        color: color.withValues(alpha: .12),
                         borderRadius: BorderRadius.circular(7),
                       ),
                       child: Text(

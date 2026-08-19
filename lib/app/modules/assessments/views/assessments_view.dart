@@ -51,137 +51,147 @@ class AssessmentsView extends GetView<AssessmentsController> {
   }
 
   Widget _toolbar() {
-    return Row(
-      children: [
-        _filter("All", AppColors.cyan),
+    return Obx(() {
+      return Row(
+        children: [
+          _filter(
+            "All",
+            AppColors.cyan,
+            isActive: controller.selectedFilter.value == "All",
+          ),
 
-        _filter("Pending", AppColors.orange),
+          _filter(
+            "Pending",
+            AppColors.orange,
+            isActive: controller.selectedFilter.value == "Pending",
+          ),
 
-        _filter("Completed", AppColors.green),
+          _filter(
+            "Completed",
+            AppColors.green,
+            isActive: controller.selectedFilter.value == "Completed",
+          ),
 
-        _filter("Overdue", AppColors.red),
-      ],
-    );
+          _filter(
+            "Overdue",
+            AppColors.red,
+            isActive: controller.selectedFilter.value == "Overdue",
+          ),
+        ],
+      );
+    });
   }
 
   Widget _filter(String text, Color color, {bool isActive = false}) {
-    return Container(
-      margin: const EdgeInsets.only(right: 10),
+    return GestureDetector(
+      onTap: () => controller.changeFilter(text),
+      child: Container(
+        margin: const EdgeInsets.only(right: 10),
 
-      padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 8),
+        padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 8),
 
-      decoration: BoxDecoration(
-        color: isActive ? color.withValues(alpha: 0.8) : AppColors.card,
+        decoration: BoxDecoration(
+          color: isActive ? color.withValues(alpha: 0.8) : AppColors.card,
 
-        borderRadius: BorderRadius.circular(6),
+          borderRadius: BorderRadius.circular(6),
 
-        border: Border.all(color: color.withValues(alpha: .5)),
-      ),
+          border: Border.all(color: color.withValues(alpha: .5)),
+        ),
 
-      child: Text(
-        text,
-        style: TextStyle(
-          color: isActive ? Colors.white : color,
-          fontSize: 16,
-          fontWeight: FontWeight.bold,
+        child: Text(
+          text,
+          style: TextStyle(
+            color: isActive ? Colors.white : color,
+            fontSize: 16,
+            fontWeight: FontWeight.bold,
+          ),
         ),
       ),
     );
   }
 
   Widget _table() {
-    final data = [
-      [
-        "Database Normalization",
-        "CSE 204 - DB Systems",
-        "May 18, 2025",
-        "Pending",
-      ],
-
-      [
-        "Binary Search Tree Implementation",
-        "CSE 201 - Data Structures",
-        "May 19, 2025",
-        "Pending",
-      ],
-
-      [
-        "Operating System Process Scheduling",
-        "CSE 205 - Operating Systems",
-        "May 16, 2025",
-        "Overdue",
-      ],
-
-      [
-        "SQL Query Practice Set",
-        "CSE 204 - DB Systems",
-        "May 11, 2025",
-        "Completed",
-      ],
-    ];
-
     return Container(
       width: double.infinity,
       decoration: BoxDecoration(
         color: AppColors.card,
-
-        //borderRadius: BorderRadius.circular(12),
         border: Border.all(color: AppColors.border),
       ),
 
-      child: DataTable(
-        headingRowColor: WidgetStateProperty.all(AppColors.card2),
-        //border: TableBorder.all(borderRadius: BorderRadius.circular(12)),
-
-        columns: [
-          const DataColumn(
-            label: Text(
-              "Assignment Title",
-              style: TextStyle(color: AppColors.secondary),
+      child: Obx(() {
+        return DataTable(
+          headingRowColor: WidgetStateProperty.all(AppColors.card2),
+          columns: [
+            const DataColumn(
+              label: Text(
+                "Assignment Title",
+                style: TextStyle(color: AppColors.secondary),
+              ),
             ),
-          ),
 
-          const DataColumn(
-            label: Text("Course", style: TextStyle(color: AppColors.secondary)),
-          ),
-
-          const DataColumn(
-            label: Text(
-              "Due Date",
-              style: TextStyle(color: AppColors.secondary),
+            const DataColumn(
+              label: Text(
+                "Course",
+                style: TextStyle(color: AppColors.secondary),
+              ),
             ),
-          ),
 
-          const DataColumn(
-            label: Text("Status", style: TextStyle(color: AppColors.secondary)),
-          ),
-        ],
-
-        rows: data.map((e) {
-          return DataRow(
-
-            cells: [
-              DataCell(
-                Text(e[0], style: const TextStyle(color: AppColors.text)),
+            const DataColumn(
+              label: Text(
+                "Due Date",
+                style: TextStyle(color: AppColors.secondary),
               ),
+            ),
 
-              DataCell(
-                Text(e[1], style: const TextStyle(color: AppColors.secondary)),
+            const DataColumn(
+              label: Text(
+                "Status",
+                style: TextStyle(color: AppColors.secondary),
               ),
+            ),
+          ],
 
-              DataCell(
-                Text(e[2], style: const TextStyle(color: AppColors.text)),
-              ),
+          rows: controller.getFilteredAssessments().map((assessment) {
+            return DataRow(
+              cells: [
+                DataCell(
+                  Text(
+                    assessment['title'] ?? '',
+                    style: const TextStyle(color: AppColors.text),
+                  ),
+                ),
 
-              DataCell(_status(e[3])),
-            ],
-          );
-        }).toList(),
-      ),
+                DataCell(
+                  Text(
+                    '${assessment['course_code']} - '
+                    '${assessment['course_name']}',
+                    style: const TextStyle(color: AppColors.secondary),
+                  ),
+                ),
+
+                DataCell(
+                  Text(
+                    controller.formatDueDate(assessment['due_date']),
+                    style: const TextStyle(color: AppColors.text),
+                  ),
+                ),
+
+                DataCell(
+                  _status(
+                    assessment['status'],
+                    assessment['id'].toString(),
+                    assessment['url'] ?? 'https://toolkit.nav.bd',
+                  ),
+                ),
+              ],
+            );
+          }).toList(),
+        );
+      }),
     );
   }
 
-  Widget _status(String value) {
+  Widget _status(String value, String id, String url) {
     Color getColor(String status) {
       switch (status) {
         case "Completed":
@@ -195,59 +205,90 @@ class AssessmentsView extends GetView<AssessmentsController> {
       }
     }
 
-    return Container(
-      padding: const EdgeInsets.symmetric(horizontal: 8),
-      margin: EdgeInsets.symmetric(vertical: 4),
-      decoration: BoxDecoration(
-        color: getColor(value).withValues(alpha: .12),
+    final color = getColor(value);
 
-        borderRadius: BorderRadius.circular(6),
-
-        border: Border.all(color: getColor(value)),
-      ),
-
-      child: DropdownButtonHideUnderline(
-        child: DropdownButton<String>(
-          value: value,
-
-          dropdownColor: AppColors.card,
-
-          icon: Icon(
-            Icons.keyboard_arrow_down,
-            color: getColor(value),
-            size: 18,
+    return Row(
+      mainAxisSize: MainAxisSize.min,
+      children: [
+        // Status box
+        Container(
+          padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 6),
+          decoration: BoxDecoration(
+            color: color.withValues(alpha: .12),
+            borderRadius: BorderRadius.circular(6),
+            border: Border.all(color: color),
           ),
+          child: Text(
+            value,
+            style: TextStyle(
+              color: color,
+              fontSize: 12,
+              fontWeight: FontWeight.w500,
+            ),
+          ),
+        ),
 
-          style: TextStyle(color: getColor(value), fontSize: 18,),
+        // Done button
+        if (value == "Pending" || value == "Overdue") ...[
+          const SizedBox(width: 8),
 
-          items: ["Pending", "Completed", "Overdue"].map((status) {
-            final color = getColor(status);
-
-            return DropdownMenuItem<String>(
-              value: status,
-
-              child: Container(
-                padding: const EdgeInsets.symmetric(
-                  horizontal: 10,
-                  vertical: 5,
-                ),
-
-                child: Text(
-                  status,
-                  style: TextStyle(color: color, fontSize: 12),
+          InkWell(
+            onTap: () {
+              controller.completeAssessment(id);
+            },
+            borderRadius: BorderRadius.circular(6),
+            child: Container(
+              padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 6),
+              decoration: BoxDecoration(
+                color: AppColors.green.withValues(alpha: .10),
+                borderRadius: BorderRadius.circular(6),
+                border: Border.all(
+                  color: AppColors.green.withValues(alpha: .6),
                 ),
               ),
-            );
-          }).toList(),
+              child: const Row(
+                mainAxisSize: MainAxisSize.min,
+                children: [
+                  Icon(Icons.check, color: AppColors.green, size: 15),
+                  SizedBox(width: 4),
+                  Text(
+                    "Done",
+                    style: TextStyle(
+                      color: AppColors.green,
+                      fontSize: 12,
+                      fontWeight: FontWeight.w600,
+                    ),
+                  ),
+                ],
+              ),
+            ),
+          ),
+        ],
+        const SizedBox(width: 8),
 
-          onChanged: (newValue) {
-            if (newValue != null) {
-              // update controller/database here
-              print("Changed: $newValue");
-            }
+        InkWell(
+          onTap: () {
+            controller.openUrl(url);
           },
+          borderRadius: BorderRadius.circular(6),
+          child: Container(
+            padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 6),
+            decoration: BoxDecoration(
+              color: Colors.grey.withValues(alpha: .10),
+              borderRadius: BorderRadius.circular(6),
+              border: Border.all(color: Colors.grey.withValues(alpha: .6)),
+            ),
+            child: Text(
+              "Open",
+              style: TextStyle(
+                color: Colors.grey,
+                fontSize: 14,
+                fontWeight: FontWeight.w600,
+              ),
+            ),
+          ),
         ),
-      ),
+      ],
     );
   }
 }
