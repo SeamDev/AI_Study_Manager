@@ -5,6 +5,7 @@ import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:hive_flutter/hive_flutter.dart';
 import 'package:supabase_flutter/supabase_flutter.dart';
+import 'package:flutter_dotenv/flutter_dotenv.dart';
 
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
@@ -13,7 +14,7 @@ void main() async {
     publishableKey: 'sb_publishable_y4VPzulMfz1gfen_SMW6Wg_zt5BK9Lm',
   );
   WidgetsFlutterBinding.ensureInitialized();
-
+  await dotenv.load(fileName: 'seam');
   await Hive.initFlutter();
 
   await Hive.openBox("chatBox");
